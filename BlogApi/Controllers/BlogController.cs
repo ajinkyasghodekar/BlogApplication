@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlogApi.Repository.IRepository;
 using BlogApplication.DataAccess.Models;
 using BlogApplication.DataAccess.Models.DTO.Blog;
 using DataAccess.Data;
@@ -12,11 +13,11 @@ namespace BlogApi.Controllers
     [Route("api/BlogController")]
     public class BlogController : ControllerBase
     {
-        private readonly MyAppDb _db;
+        private readonly IBlogRepository _dbBlog;
         private readonly IMapper _mapper;
-        public BlogController(MyAppDb db, IMapper mapper)
+        public BlogController(IBlogRepository dbBlog, IMapper mapper)
         {
-            _db = db;
+            _dbBlog = dbBlog;
             _mapper = mapper;
         }
 
@@ -25,7 +26,7 @@ namespace BlogApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BlogDTO>>> GetUsers()
         {
-            IEnumerable<Blog> userList = await _db.BlogsTable.ToListAsync();
+            IEnumerable<Blog> userList = await _dbBlog.GetAllAsync();
             return Ok(_mapper.Map<List<BlogDTO>>(userList));
         }
 
@@ -39,10 +40,8 @@ namespace BlogApi.Controllers
             
             Blog model = _mapper.Map<Blog>(blogCreateDTO);
 
-            await _db.BlogsTable.AddAsync(model);
-            await _db.SaveChangesAsync();
-
-            return Ok(blogCreateDTO);
+            await _dbBlog.CreateAsync(model);
+            return Ok(model);
         }
 
         // Delete a Blog [HttpDelete] based on Id
@@ -56,14 +55,13 @@ namespace BlogApi.Controllers
             {
                 return BadRequest();
             }
-            var user = await _db.BlogsTable.FirstOrDefaultAsync(u => u.Id == id);
-            if (user == null)
+            var blog = await _dbBlog.GetAsync(u => u.Id == id);
+            if (blog == null)
             {
                 return NotFound();
 
             }
-            _db.BlogsTable.Remove(user);
-            await _db.SaveChangesAsync();
+            await _dbBlog.RemoveAsync(blog);
             return NoContent();
         }
 
@@ -79,8 +77,7 @@ namespace BlogApi.Controllers
             }
             Blog model = _mapper.Map<Blog>(blogUpdateDTO);
 
-            _db.BlogsTable.Update(model);
-            await _db.SaveChangesAsync();
+            await _dbBlog.UpdateAsync(model);
             return NoContent();
         }
     }

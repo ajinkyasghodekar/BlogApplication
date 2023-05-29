@@ -1,4 +1,5 @@
 using BlogApi;
+using BlogApi.Repository.IRepository;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MyAppDb>(option => {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+
+// Repository Builder
+builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 
 // Builder for AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMappingConfig));

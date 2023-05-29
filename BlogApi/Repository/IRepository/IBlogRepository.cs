@@ -8,14 +8,8 @@ using System.Threading.Tasks;
 
 namespace BlogApi.Repository.IRepository
 {
-    public interface IBlogRepository
+    public interface IBlogRepository : IRepository<Blog>
     {
-        Task<List<Blog>> GetAllAsync(Expression<Func<Blog, bool>> filter = null);
-        Task<Blog> GetAsync(Expression<Func<Blog, bool>> filter = null, bool tracked = true);
-        Task CreateAsync(Blog entity);
-        
-        Task RemoveAsync(Blog entity);
-
-        Task SaveAsync();
+        Task<Blog> UpdateAsync(Blog entity);
     }
 }
