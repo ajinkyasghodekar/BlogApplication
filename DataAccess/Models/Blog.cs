@@ -7,7 +7,7 @@ namespace BlogApplication.DataAccess.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int BlogId { get; set; }
 
         [MaxLength(50)]
         public string BlogTitle { get; set; }

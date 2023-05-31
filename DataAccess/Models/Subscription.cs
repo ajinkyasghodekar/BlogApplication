@@ -15,6 +15,17 @@ namespace BlogApplication.DataAccess.Models
         public DateTime SubscriptionStartDate { get; set; }
         public DateTime SubscriptionEndDate { get; set; }
         public int SubscriptionAmount { get; set; }
+
+
+        [ForeignKey("Users")]
+        public int UserId { get; set; }
+
+        [ForeignKey("Blog")]
+        public int BlogId { get; set; }
+
+        public Users Users { get; set; }
+        public Blog Blog { get; set; }
+
     }
     public enum SubscriptionStatus
     {

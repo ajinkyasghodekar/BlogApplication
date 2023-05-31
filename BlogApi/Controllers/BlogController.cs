@@ -59,7 +59,7 @@ namespace BlogApi.Controllers
             {
                 return BadRequest();
             }
-            var blog = await _dbBlog.GetAsync(u => u.Id == id);
+            var blog = await _dbBlog.GetAsync(u => u.BlogId == id);
             if (blog == null)
             {
                 return NotFound();

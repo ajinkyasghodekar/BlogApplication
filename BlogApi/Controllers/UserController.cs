@@ -66,7 +66,7 @@ namespace BlogApi.Controllers
             {
                 return BadRequest();
             }
-            var user = await _db.UsersTable.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _db.UsersTable.FirstOrDefaultAsync(u => u.UserId == id);
             if (user == null)
             {
                 return NotFound();

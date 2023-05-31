@@ -35,7 +35,7 @@ namespace DataAccess.Data
 
                 new Blog()
                 {
-                    Id = 1,
+                    BlogId = 1,
                     BlogTitle = "Neque porro quisquam est qui",
                     BlogContent = "Lorem Neque Neque porro quisquam Neque porro quisquam est qui Neque porro quisquam est quiest quiporro quisquam est qui",
                     BlogCategory = "Nature",
@@ -43,7 +43,7 @@ namespace DataAccess.Data
                 },
                 new Blog()
                 {
-                    Id = 2,
+                    BlogId = 2,
                     BlogTitle = "Porro quisqu ameque  est qui",
                     BlogContent = "Lorem Neque Neque porro quisquam Neque porro quisquam est qui Neque porro quisquam est quiest quiporro quisquam est qui",
                     BlogCategory = "Politics",
@@ -51,7 +51,7 @@ namespace DataAccess.Data
                 },
                 new Blog()
                 {
-                    Id = 3,
+                    BlogId = 3,
                     BlogTitle = "Eest qui eque porro quisquam ",
                     BlogContent = "Lorem Neque Neque porro quisquam Neque porro quisquam est qui Neque porro quisquam est quiest quiporro quisquam est qui",
                     BlogCategory = "Weather",

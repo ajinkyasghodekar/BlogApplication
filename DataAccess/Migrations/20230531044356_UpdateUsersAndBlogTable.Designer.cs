@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(MyAppDb))]
-    partial class MyAppDbModelSnapshot : ModelSnapshot
+    [Migration("20230531044356_UpdateUsersAndBlogTable")]
+    partial class UpdateUsersAndBlogTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,9 +119,6 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubscriptionId"));
 
-                    b.Property<int>("BlogId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SubscribeStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -132,14 +132,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("SubscriptionStartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("SubscriptionId");
-
-                    b.HasIndex("BlogId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Subscriptions");
                 });
@@ -175,25 +168,6 @@ namespace DataAccess.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("UsersTable");
-                });
-
-            modelBuilder.Entity("BlogApplication.DataAccess.Models.Subscription", b =>
-                {
-                    b.HasOne("BlogApplication.DataAccess.Models.Blog", "Blog")
-                        .WithMany()
-                        .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BlogApplication.DataAccess.Models.Users", "Users")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Blog");
-
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
