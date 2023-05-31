@@ -16,8 +16,17 @@ namespace DataAccess.Data
 
         }
 
+        // Table for Blog
         public DbSet<Blog> BlogsTable { get; set; }
 
+        // Table for Users
+        public DbSet<Users> UsersTable { get; set; }
+
+        // Table for AuthSecurity
+        public DbSet<AuthSecurity> AuthSecurityTable { get; set; }
+
+        // Table for Subscription
+        public DbSet<Subscription> Subscriptions { get; set; }
 
         // Inserting sample data to Users table
         protected override void OnModelCreating(ModelBuilder modelBuilder)

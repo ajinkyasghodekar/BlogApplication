@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(MyAppDb))]
-    partial class MyAppDbModelSnapshot : ModelSnapshot
+    [Migration("20230530105110_UpdateSubscriptionTable")]
+    partial class UpdateSubscriptionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +51,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuthSecurityTable", (string)null);
+                    b.ToTable("AuthSecurityTable");
                 });
 
             modelBuilder.Entity("BlogApplication.DataAccess.Models.Blog", b =>
@@ -79,7 +82,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BlogsTable", (string)null);
+                    b.ToTable("BlogsTable");
 
                     b.HasData(
                         new
@@ -131,7 +134,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("SubscriptionId");
 
-                    b.ToTable("Subscriptions", (string)null);
+                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("BlogApplication.DataAccess.Models.Users", b =>
@@ -164,7 +167,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UsersTable", (string)null);
+                    b.ToTable("UsersTable");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BlogApplication.DataAccess.Models;
 using BlogApplication.DataAccess.Models.DTO.Blog;
+using BlogApplication.DataAccess.Models.DTO.Subscription;
+using BlogApplication.DataAccess.Models.DTO.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,14 @@ namespace BlogApi
             CreateMap<Blog, BlogDTO>().ReverseMap();
             CreateMap<Blog, BlogCreateDTO>().ReverseMap();
             CreateMap<Blog, BlogUpdateDTO>().ReverseMap();
+
+            CreateMap<Users, UserDTO>().ReverseMap();
+            CreateMap<Users, UserCreateDTO>().ReverseMap();
+            CreateMap<Users, UserUpdateDTO>().ReverseMap();
+
+            CreateMap<Subscription, SubscriptionDTO>().ReverseMap();
+            CreateMap<Subscription, SubscriptionCreateDTO>().ReverseMap();
+            CreateMap<Subscription, SubscriptionUpdateDTO>().ReverseMap();
         }
     }
 }

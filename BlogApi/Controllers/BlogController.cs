@@ -22,34 +22,38 @@ namespace BlogApi.Controllers
         }
 
 
-        // Get all User [HttpGet]
+        // Get all Blog [HttpGet]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BlogDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<BlogDTO>>> GetBlogs()
         {
-            IEnumerable<Blog> userList = await _dbBlog.GetAllAsync();
-            return Ok(_mapper.Map<List<BlogDTO>>(userList));
+            IEnumerable<Blog> blogList = await _dbBlog.GetAllAsync();
+            return Ok(_mapper.Map<List<BlogDTO>>(blogList));
         }
+
 
         // Create a Blog [HttpPost]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<BlogDTO>> CreateUser([FromBody] BlogCreateDTO blogCreateDTO)
+        public async Task<ActionResult<BlogDTO>> CreateBlog([FromBody] BlogCreateDTO blogCreateDTO)
         {
-            
             Blog model = _mapper.Map<Blog>(blogCreateDTO);
 
             await _dbBlog.CreateAsync(model);
             return Ok(model);
         }
 
+
         // Delete a Blog [HttpDelete] based on Id
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = "DeleteBlog")]
+        [Authorize(Roles ="admin")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteUser(int id)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> DeleteBlog(int id)
         {
             if (id == 0)
             {
@@ -65,11 +69,12 @@ namespace BlogApi.Controllers
             return NoContent();
         }
 
+
         // Update a Blog Data [HttpPut] based on id
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] BlogUpdateDTO blogUpdateDTO)
+        public async Task<IActionResult> UpdateBlog(int id, [FromBody] BlogUpdateDTO blogUpdateDTO)
         {
             if (blogUpdateDTO == null || id != blogUpdateDTO.Id)
             {

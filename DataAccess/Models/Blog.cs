@@ -20,5 +20,6 @@ namespace BlogApplication.DataAccess.Models
 
         [Range(0, 100)]
         public int NoOfSubscriptions { get; set; }
+
     }
 }
