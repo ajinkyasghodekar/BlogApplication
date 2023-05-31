@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlogApplication.DataAccess.Models
@@ -18,7 +19,9 @@ namespace BlogApplication.DataAccess.Models
         [MaxLength(30)]
         public string BlogCategory { get; set; }
 
-        [Range(0, 100)]
+
+        [DisplayName("No of Subscriptions Allowed")]
+        [Range(0, 100 ,ErrorMessage = "No Of Subscriptions must be between 1-100")]
         public int NoOfSubscriptions { get; set; }
 
     }

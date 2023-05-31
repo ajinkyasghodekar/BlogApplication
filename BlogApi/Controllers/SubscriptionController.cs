@@ -38,6 +38,20 @@ namespace BlogApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SubscriptionDTO>> CreateSubscription([FromBody] SubscriptionCreateDTO subscriptionCreateDTO)
         {
+
+            /*// Custom validation for Airline Code
+            if (await _dbSubscription.GetAllAsync(u => u.UserId == subscriptionCreateDTO.UserId) == null)
+            {
+                ModelState.AddModelError("", "Invalid User Id Code");
+                return BadRequest(ModelState);
+            }
+            // Custom validation for Flight Code
+            if (await _dbSubscription.GetAllAsync(u => u.BlogId == subscriptionCreateDTO.BlogId) == null)
+            {
+                ModelState.AddModelError("", "Invalid Blog Id Code");
+                return BadRequest(ModelState);
+            }*/
+
             Subscription model = _mapper.Map<Subscription>(subscriptionCreateDTO);
 
             await _dbSubscription.CreateAsync(model);
