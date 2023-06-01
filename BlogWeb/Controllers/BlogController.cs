@@ -1,96 +1,35 @@
-﻿using BlogApplication.DataAccess.Models;
+﻿using AutoMapper;
+using BlogApplication.DataAccess.Models;
+using BlogApplication.DataAccess.Models.DTO.Blog;
+using BlogWeb.Services.IServices;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Newtonsoft.Json;
 
 namespace BlogWeb.Controllers
 {
 
     public class BlogController : Controller
     {
-        private readonly MyAppDb _db;
-        public BlogController(MyAppDb db)
+        private readonly IBlogService _blogService;
+        private readonly IMapper _mapper;
+        public BlogController(IBlogService blogService, IMapper mapper)
         {
-            _db = db;
+            _blogService = blogService;
+            _mapper = mapper;
         }
 
-
-        // View all blogs in UI
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<Blog> blogList = _db.BlogsTable.ToList();
-            return View(blogList);
-        }
+            List<BlogDTO> list = new();
 
-
-        // Create a blog in UI
-        public IActionResult CreateBlog()
-        {
-            return View();
-        }
-        [HttpPost]
-        public IActionResult CreateBlog(Blog obj)
-        {  
-                _db.BlogsTable.Add(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Index");           
-        }
-
-
-        // Edit a blog in UI
-        public IActionResult EditBlog(int? id)
-        {
-            if (id == null || id == 0)
+            var response = await _blogService.GetAllAsync<APIResponse>();
+            if (response != null && response.IsSuccess)
             {
-                return NotFound();
+                list = JsonConvert.DeserializeObject<List<BlogDTO>>(Convert.ToString(response.Result));
             }
-            Blog? blogFromDb = _db.BlogsTable.Find(id);
-
-            if (blogFromDb == null)
-            {
-                return NotFound();
-            }
-            return View(blogFromDb);
-        }
-        [HttpPost]
-        public IActionResult EditBlog(Blog obj)
-        {
-            if (ModelState.IsValid)
-            {
-                _db.BlogsTable.Update(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View();
-        }
-
-
-        // Edit a blog in UI
-        public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            Blog? blogFromDb = _db.BlogsTable.Find(id);
-
-            if (blogFromDb == null)
-            {
-                return NotFound();
-            }
-            return View(blogFromDb);
-        }
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePOST(int? id)
-        {
-            Blog? obj = _db.BlogsTable.Find(id);
-            if (obj == null)
-            {
-                return NotFound();
-            }
-            _db.BlogsTable.Remove(obj);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+            return View(list);
         }
     }
 }

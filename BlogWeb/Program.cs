@@ -1,3 +1,6 @@
+using BlogWeb.Services;
+using BlogWeb.Services.IServices;
+using DataAccess;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +13,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MyAppDb>(option => {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+
+builder.Services.AddHttpClient<IBlogService, BlogService>();
+builder.Services.AddScoped<IBlogService, BlogService>();
+
+
+// Builder for AutoMapper
+builder.Services.AddAutoMapper(typeof(AutoMappingConfig));
+
 
 var app = builder.Build();
 

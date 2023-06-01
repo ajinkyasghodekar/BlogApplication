@@ -4,7 +4,7 @@ namespace BlogApplication.DataAccess.Models.DTO.Blog
 {
     public class BlogDTO
     {
-        public int Id { get; set; }
+        public int BlogId { get; set; }
 
         [Required]
         [MaxLength(50)]

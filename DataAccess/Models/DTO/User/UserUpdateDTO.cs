@@ -5,7 +5,7 @@ namespace BlogApplication.DataAccess.Models.DTO.User
     public class UserUpdateDTO
     {
         [Required]
-        public int Id { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         [MaxLength(30)]
