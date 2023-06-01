@@ -6,6 +6,7 @@ using DataAccess.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace BlogApi.Controllers
 {
@@ -15,89 +16,135 @@ namespace BlogApi.Controllers
     {
         private readonly ISubscriptionRepository _dbSubscription;
         private readonly IMapper _mapper;
+        protected APIResponse _response;
         public SubscriptionController(ISubscriptionRepository dbSubscription, IMapper mapper)
         {
             _dbSubscription = dbSubscription;
             _mapper = mapper;
+            this._response = new();
         }
 
-
-        // Get all Subscription [HttpGet]
+        // Get all Subscription List data
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SubscriptionDTO>>> GetSubscriptions()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<APIResponse>> GetSubscriptionLists()
+
         {
-            IEnumerable<Subscription> subscriptionList = await _dbSubscription.GetAllAsync();
-            return Ok(_mapper.Map<List<SubscriptionDTO>>(subscriptionList));
+            try
+            {
+
+                IEnumerable<Subscription> subscriptionList = await _dbSubscription.GetAllAsync();
+
+                _response.Result = _mapper.Map<List<SubscriptionDTO>>(subscriptionList);
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+            }
+            return _response;
         }
 
 
-        // Create a Subscription [HttpPost]
+        // Create a SubscriptionList [HttpPost]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<SubscriptionDTO>> CreateSubscription([FromBody] SubscriptionCreateDTO subscriptionCreateDTO)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> CreateSubscription([FromBody] SubscriptionCreateDTO createDTO)
         {
-
-            /*// Custom validation for Airline Code
-            if (await _dbSubscription.GetAllAsync(u => u.UserId == subscriptionCreateDTO.UserId) == null)
+            try
             {
-                ModelState.AddModelError("", "Invalid User Id Code");
-                return BadRequest(ModelState);
+
+                if (createDTO == null)
+                {
+                    return BadRequest(createDTO);
+                }
+
+                Subscription subscription = _mapper.Map<Subscription>(createDTO);
+
+                await _dbSubscription.CreateAsync(subscription);
+                _response.Result = _mapper.Map<SubscriptionDTO>(subscription);
+                _response.StatusCode = HttpStatusCode.Created;
+                return Ok();
             }
-            // Custom validation for Flight Code
-            if (await _dbSubscription.GetAllAsync(u => u.BlogId == subscriptionCreateDTO.BlogId) == null)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", "Invalid Blog Id Code");
-                return BadRequest(ModelState);
-            }*/
-
-            Subscription model = _mapper.Map<Subscription>(subscriptionCreateDTO);
-
-            await _dbSubscription.CreateAsync(model);
-            return Ok(model);
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
 
 
         // Delete a Subscription [HttpDelete] based on Id
-        [HttpDelete("{id:int}", Name = "DeleteSubscription")]
         [Authorize(Roles = "admin")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> DeleteSubscription(int id)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<APIResponse>> DeleteSubscription(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest();
+                if (id == 0)
+                {
+                    return BadRequest();
+                }
+                var sub = await _dbSubscription.GetAsync(u => u.SubscriptionId == id);
+                if (sub == null)
+                {
+                    return NotFound();
+                }
+                await _dbSubscription.RemoveAsync(sub);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
+                return Ok(_response);
             }
-            var subscription = await _dbSubscription.GetAsync(u => u.SubscriptionId == id);
-            if (subscription == null)
+            catch (Exception ex)
             {
-                return NotFound();
-
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
             }
-            await _dbSubscription.RemoveAsync(subscription);
-            return NoContent();
+            return _response;
         }
 
 
         // Update a Subscription Data [HttpPut] based on id
-        [HttpPut]
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateSubscription(int id, [FromBody] SubscriptionUpdateDTO subscriptionUpdateDTO)
+        public async Task<ActionResult<APIResponse>> UpdateSubscription(int id, [FromBody] SubscriptionUpdateDTO updateDTO)
         {
-            if (subscriptionUpdateDTO == null || id != subscriptionUpdateDTO.SubscriptionId)
+            try
             {
-                return BadRequest();
-            }
-            Subscription model = _mapper.Map<Subscription>(subscriptionUpdateDTO);
+                if (updateDTO == null || id != updateDTO.SubscriptionId)
+                {
+                    return BadRequest();
+                }
 
-            await _dbSubscription.UpdateAsync(model);
-            return NoContent();
+                Subscription model = _mapper.Map<Subscription>(updateDTO);
+
+                await _dbSubscription.UpdateAsync(model);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
     }
 }

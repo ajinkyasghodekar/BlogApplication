@@ -1,5 +1,6 @@
-using BlogApi;
+
 using BlogApi.Repository.IRepository;
+using DataAccess;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,8 @@ builder.Services.AddDbContext<MyAppDb>(option => {
 // Repository Builder
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 // Builder for AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMappingConfig));

@@ -6,6 +6,7 @@ using DataAccess.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace BlogApi.Controllers
 {
@@ -15,75 +16,135 @@ namespace BlogApi.Controllers
     {
         private readonly IBlogRepository _dbBlog;
         private readonly IMapper _mapper;
+        protected APIResponse _response;
         public BlogController(IBlogRepository dbBlog, IMapper mapper)
         {
             _dbBlog = dbBlog;
             _mapper = mapper;
+            this._response = new();   
         }
 
-
-        // Get all Blog [HttpGet]
+        // Get all Blog List data
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BlogDTO>>> GetBlogs()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<APIResponse>> GetBlogs()
+
         {
-            IEnumerable<Blog> blogList = await _dbBlog.GetAllAsync();
-            return Ok(_mapper.Map<List<BlogDTO>>(blogList));
+            try
+            {
+
+                IEnumerable<Blog> blogList = await _dbBlog.GetAllAsync();
+
+                _response.Result = _mapper.Map<List<BlogDTO>>(blogList);
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+
+            }
+            return _response;
         }
 
 
         // Create a Blog [HttpPost]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<BlogDTO>> CreateBlog([FromBody] BlogCreateDTO blogCreateDTO)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> CreateBlog([FromBody] BlogCreateDTO createDTO)
         {
-            Blog model = _mapper.Map<Blog>(blogCreateDTO);
+            try
+            {
 
-            await _dbBlog.CreateAsync(model);
-            return Ok(model);
+                if (createDTO == null)
+                {
+                    return BadRequest(createDTO);
+                }
+
+                Blog blog = _mapper.Map<Blog>(createDTO);
+
+                await _dbBlog.CreateAsync(blog);
+                _response.Result = _mapper.Map<BlogDTO>(blog);
+                _response.StatusCode = HttpStatusCode.Created;
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
 
 
         // Delete a Blog [HttpDelete] based on Id
-        [HttpDelete("{id:int}", Name = "DeleteBlog")]
         [Authorize(Roles ="admin")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> DeleteBlog(int id)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<APIResponse>> DeleteBlog(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest();
+                if (id == 0)
+                {
+                    return BadRequest();
+                }
+                var blog = await _dbBlog.GetAsync(u => u.BlogId == id);
+                if (blog == null)
+                {
+                    return NotFound();
+                }
+                await _dbBlog.RemoveAsync(blog);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
+                return Ok(_response);
             }
-            var blog = await _dbBlog.GetAsync(u => u.BlogId == id);
-            if (blog == null)
+            catch (Exception ex)
             {
-                return NotFound();
-
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
             }
-            await _dbBlog.RemoveAsync(blog);
-            return NoContent();
+            return _response;
         }
 
 
         // Update a Blog Data [HttpPut] based on id
-        [HttpPut]
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateBlog(int id, [FromBody] BlogUpdateDTO blogUpdateDTO)
+        public async Task<ActionResult<APIResponse>> UpdateBlog(int id, [FromBody] BlogUpdateDTO updateDTO)
         {
-            if (blogUpdateDTO == null || id != blogUpdateDTO.Id)
+            try
             {
-                return BadRequest();
-            }
-            Blog model = _mapper.Map<Blog>(blogUpdateDTO);
+                if (updateDTO == null || id != updateDTO.BlogId)
+                {
+                    return BadRequest();
+                }
 
-            await _dbBlog.UpdateAsync(model);
-            return NoContent();
+                Blog model = _mapper.Map<Blog>(updateDTO);
+
+                await _dbBlog.UpdateAsync(model);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
     }
 }

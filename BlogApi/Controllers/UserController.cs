@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using BlogApi.Repository.IRepository;
 using BlogApplication.DataAccess.Models;
+using BlogApplication.DataAccess.Models.DTO.Blog;
 using BlogApplication.DataAccess.Models.DTO.User;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 
@@ -15,83 +18,138 @@ namespace BlogApi.Controllers
     [Route("api/UserController")]
     public class UserController : ControllerBase
     {
-        private readonly MyAppDb _db;
+        private readonly IUserRepository _dbUser;
         private readonly IMapper _mapper;
-        public UserController(MyAppDb db, IMapper mapper)
+        protected APIResponse _response;
+        public UserController(IUserRepository dbUser, IMapper mapper)
         {
-            _db = db;
+            _dbUser = dbUser;
             _mapper = mapper;
+            this._response = new();
         }
 
-        // Get all Users [HttpGet]
+        // Get all Users List data
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<APIResponse>> GetUsers()
+
         {
-            IEnumerable<Users> userList = await _db.UsersTable.ToListAsync();
-            return Ok(_mapper.Map<List<UserDTO>>(userList));
+            try
+            {
+
+                IEnumerable<Users> userList = await _dbUser.GetAllAsync();
+
+                _response.Result = _mapper.Map<List<UserDTO>>(userList);
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+
+            }
+            return _response;
         }
+
 
         // Create a User [HttpPost]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserDTO>> CreateUser([FromBody] UserCreateDTO userCreateDTO)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> CreateUser([FromBody] UserCreateDTO createDTO)
         {
-            // Custom validation for User's Name
-            if (await _db.UsersTable.FirstOrDefaultAsync(u => u.Name.ToLower() == userCreateDTO.Name.ToLower()) != null)
+            try
             {
-                ModelState.AddModelError("", "User Name Already Exists");
-                return BadRequest(ModelState);
+
+                if (createDTO == null)
+                {
+                    return BadRequest(createDTO);
+                }
+
+                Users user = _mapper.Map<Users>(createDTO);
+
+                await _dbUser.CreateAsync(user);
+                _response.Result = _mapper.Map<UserDTO>(user);
+                _response.StatusCode = HttpStatusCode.Created;
+                return Ok();
             }
-            Users model = _mapper.Map<Users>(userCreateDTO);
-
-            await _db.UsersTable.AddAsync(model);
-            await _db.SaveChangesAsync();
-
-            return Ok(userCreateDTO);
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
+
 
         // Delete a User [HttpDelete] based on Id
-        [HttpDelete("{id:int}", Name = "DeleteUser")]
         [Authorize(Roles = "admin")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> DeleteUser(int id)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<APIResponse>> DeleteUser(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest();
+                if (id == 0)
+                {
+                    return BadRequest();
+                }
+                var user = await _dbUser.GetAsync(u => u.UserId == id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                await _dbUser.RemoveAsync(user);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
+                return Ok(_response);
             }
-            var user = await _db.UsersTable.FirstOrDefaultAsync(u => u.UserId == id);
-            if (user == null)
+            catch (Exception ex)
             {
-                return NotFound();
-
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
             }
-            _db.UsersTable.Remove(user);
-            await _db.SaveChangesAsync();
-            return NoContent();
+            return _response;
         }
 
-        // Update a User Data [HttpPut] based on id
-        [HttpPut]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDTO userUpdateDTO)
-        {
-            if (userUpdateDTO == null || id != userUpdateDTO.Id)
-            {
-                return BadRequest();
-            }
-            Users model = _mapper.Map<Users>(userUpdateDTO);
 
-            _db.UsersTable.Update(model);
-            await _db.SaveChangesAsync();
-            return NoContent();
+        // Update a User Data [HttpPut] based on id
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<APIResponse>> UpdateUser(int id, [FromBody] UserUpdateDTO updateDTO)
+        {
+            try
+            {
+                if (updateDTO == null || id != updateDTO.UserId)
+                {
+                    return BadRequest();
+                }
+
+                Users user = _mapper.Map<Users>(updateDTO);
+
+                await _dbUser.UpdateAsync(user);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage
+                     = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
     }
 }
