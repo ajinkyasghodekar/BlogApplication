@@ -1,6 +1,7 @@
 ﻿using BlogApplication.DataAccess.Models;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BlogWeb.Controllers
 {
@@ -22,16 +23,17 @@ namespace BlogWeb.Controllers
 
 
         // Create a blog in UI
-        [HttpPost]
-        public IActionResult Create(Blog obj)
+        public IActionResult CreateBlog()
         {
-            if(ModelState.IsValid)
-            {
-                _db.BlogsTable.Add(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
             return View();
         }
+        [HttpPost]
+        public IActionResult CreateBlog(Blog obj)
+        {  
+                _db.BlogsTable.Add(obj);
+                _db.SaveChanges();
+                return RedirectToAction("Index");           
+        }
+
     }
 }

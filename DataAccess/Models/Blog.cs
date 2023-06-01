@@ -11,12 +11,15 @@ namespace BlogApplication.DataAccess.Models
         public int BlogId { get; set; }
 
         [MaxLength(50)]
+        [DisplayName("Blog Title")]
         public string BlogTitle { get; set; }
 
         [MaxLength(200)]
+        [DisplayName("Blog Content")]
         public string BlogContent { get; set; }
 
         [MaxLength(30)]
+        [DisplayName("Blog Category")]
         public string BlogCategory { get; set; }
 
 
