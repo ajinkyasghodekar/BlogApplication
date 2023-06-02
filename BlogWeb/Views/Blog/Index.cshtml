@@ -1,6 +1,11 @@
 ﻿@model IEnumerable<DataAccess.Models.DTO.Blog.BlogDTO>
+@if (TempData["success"] != null)
+{
+    <h2>@TempData["success"]</h2>
+}
 
 <div class="container">
+
     <div class="row pt-4 pb-3">
         <div class="col-6">
             <h2 class="">

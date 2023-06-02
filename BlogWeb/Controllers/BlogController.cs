@@ -47,6 +47,7 @@ namespace BlogWeb.Controllers
                 var response = await _blogService.CreateAsync<APIResponse>(model);
                 if (response != null)
                 {
+                    TempData["success"] = "Blog Created Successfully !!!";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -74,6 +75,7 @@ namespace BlogWeb.Controllers
                 var response = await _blogService.UpdateAsync<APIResponse>(model);
                 if (response != null)
                 {
+                    TempData["success"] = "Blog Updated Successfully !!!";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -100,9 +102,9 @@ namespace BlogWeb.Controllers
             var response = await _blogService.DeleteAsync<APIResponse>(model.BlogId);
             if (response != null)
             {
+                TempData["success"] = "Blog Deleted Successfully !!!";
                 return RedirectToAction(nameof(Index));
             }
-
 
             return View(model);
         }
