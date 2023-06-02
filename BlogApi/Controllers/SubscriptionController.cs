@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BlogApi.Repository.IRepository;
-using BlogApplication.DataAccess.Models;
-using BlogApplication.DataAccess.Models.DTO.Subscription;
+using DataAccess.Models;
+using DataAccess.Models.DTO.Subscription;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

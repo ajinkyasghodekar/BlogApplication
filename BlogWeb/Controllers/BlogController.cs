@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BlogApplication.DataAccess.Models;
-using BlogApplication.DataAccess.Models.DTO.Blog;
+using DataAccess.Models;
+using DataAccess.Models.DTO.Blog;
 using BlogWeb.Services.IServices;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +30,81 @@ namespace BlogWeb.Controllers
                 list = JsonConvert.DeserializeObject<List<BlogDTO>>(Convert.ToString(response.Result));
             }
             return View(list);
+        }
+
+        // Create a new Blog 
+        public async Task<IActionResult> CreateBlog()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateBlog(BlogCreateDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _blogService.CreateAsync<APIResponse>(model);
+                if (response != null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+            }
+            return View(model);
+        }
+
+
+        public async Task<IActionResult> UpdateBlog(int BlogId)
+        {
+            var response = await _blogService.GetAsync<APIResponse>(BlogId);
+            if (response != null)
+            {
+                BlogUpdateDTO model = JsonConvert.DeserializeObject<BlogUpdateDTO>(Convert.ToString(response.Result));
+                return View(model);
+            }
+            return NotFound();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateBlog(BlogUpdateDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _blogService.UpdateAsync<APIResponse>(model);
+                if (response != null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> DeleteBlog(int BlogId)
+        {
+            var response = await _blogService.GetAsync<APIResponse>(BlogId);
+            if (response != null)
+            {
+                BlogDTO model = JsonConvert.DeserializeObject<BlogDTO>(Convert.ToString(response.Result));
+                return View(model);
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBlog(BlogDTO model)
+        {
+
+            var response = await _blogService.DeleteAsync<APIResponse>(model.BlogId);
+            if (response != null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+
+            return View(model);
         }
     }
 }

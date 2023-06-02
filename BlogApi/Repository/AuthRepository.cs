@@ -1,5 +1,5 @@
-﻿using BlogApplication.DataAccess.Models;
-using BlogApplication.DataAccess.Models.DTO.Security;
+﻿using DataAccess.Models;
+using DataAccess.Models.DTO.Security;
 using DataAccess.Data;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

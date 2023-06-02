@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BlogApplication.DataAccess.Models.DTO.Subscription
+namespace DataAccess.Models.DTO.Subscription
 {
     public class SubscriptionDTO
     {

@@ -1,5 +1,5 @@
 ﻿using BlogApi.Repository.IRepository;
-using BlogApplication.DataAccess.Models;
+using DataAccess.Models;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using System;

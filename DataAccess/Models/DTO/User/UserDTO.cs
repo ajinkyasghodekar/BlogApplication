@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BlogApplication.DataAccess.Models.DTO.User
+namespace DataAccess.Models.DTO.User
 {
     public class UserDTO
     {

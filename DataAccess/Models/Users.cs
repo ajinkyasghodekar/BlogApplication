@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BlogApplication.DataAccess.Models
+namespace DataAccess.Models
 {
     public class Users
     {

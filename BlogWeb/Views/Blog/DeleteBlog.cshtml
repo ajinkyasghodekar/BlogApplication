@@ -1,10 +1,11 @@
-﻿@model DataAccess.Models.DTO.Blog.BlogCreateDTO
+﻿@model DataAccess.Models.DTO.Blog.BlogDTO
 
-<form asp-action="CreateBlog">
+<form asp-action="DeleteBlog">
     <br />
     <div class="container border p-3">
-        <h1 class="text-primary">Create Blog</h1>
+        <h1 class="text-primary">Delete Blog</h1>
         <hr />
+        <input hidden asp-for="BlogId" />
 
         <div class="row">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -41,17 +42,17 @@
                 <span asp-validation-for="NoOfSubscriptions" class="text-danger"></span>
             </div>
 
-           
+
             <div class="col-5 offset-2">
                 <a asp-action="Index" asp-controller="Blog" class="btn-primary btn form-control ">Back to List</a>
             </div>
             <div class="col-5">
-                <input type="submit" value="Create" class="btn btn-success form-control" />
+                <input type="submit" value="Delete" class="btn btn-success form-control" />
             </div>
         </div>
     </div>
 </form>
 
-@section Scripts {
+@section Scripts{
     <partial name="_ValidationScriptsPartial" />
 }

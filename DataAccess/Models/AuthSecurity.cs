@@ -1,4 +1,4 @@
-﻿namespace BlogApplication.DataAccess.Models
+﻿namespace DataAccess.Models
 {
     public class AuthSecurity
     {

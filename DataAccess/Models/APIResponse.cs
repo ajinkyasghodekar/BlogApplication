@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace BlogApplication.DataAccess.Models
+namespace DataAccess.Models
 {
     public class APIResponse
     {

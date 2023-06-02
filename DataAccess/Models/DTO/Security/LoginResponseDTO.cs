@@ -1,4 +1,4 @@
-﻿namespace BlogApplication.DataAccess.Models.DTO.Security
+﻿namespace DataAccess.Models.DTO.Security
 {
     public class LoginResponseDTO
     {

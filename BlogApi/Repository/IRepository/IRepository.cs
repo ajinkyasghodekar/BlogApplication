@@ -1,4 +1,4 @@
-﻿using BlogApplication.DataAccess.Models;
+﻿using DataAccess.Models;
 using System.Linq.Expressions;
 
 namespace BlogApi.Repository.IRepository

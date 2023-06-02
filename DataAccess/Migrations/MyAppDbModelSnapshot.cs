@@ -48,7 +48,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuthSecurityTable");
+                    b.ToTable("AuthSecurityTable", (string)null);
                 });
 
             modelBuilder.Entity("BlogApplication.DataAccess.Models.Blog", b =>
@@ -79,7 +79,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("BlogId");
 
-                    b.ToTable("BlogsTable");
+                    b.ToTable("BlogsTable", (string)null);
 
                     b.HasData(
                         new
@@ -141,7 +141,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("BlogApplication.DataAccess.Models.Users", b =>
@@ -174,7 +174,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UsersTable");
+                    b.ToTable("UsersTable", (string)null);
                 });
 
             modelBuilder.Entity("BlogApplication.DataAccess.Models.Subscription", b =>

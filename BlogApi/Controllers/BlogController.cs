@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using BlogApi.Repository.IRepository;
-using BlogApplication.DataAccess.Models;
-using BlogApplication.DataAccess.Models.DTO.Blog;
+using DataAccess.Models;
+using DataAccess.Models.DTO.Blog;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace BlogApi.Controllers
 {
@@ -51,6 +52,40 @@ namespace BlogApi.Controllers
             return _response;
         }
 
+        // Get only one id
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<ActionResult<APIResponse>> GetOneId(int id)
+        {
+            try
+            {
+
+                if (id == 0)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(_response);
+                }
+                var blog = await _dbBlog.GetAsync(u => u.BlogId == id);
+                if (blog == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(_response);
+                }
+                _response.Result = _mapper.Map<BlogDTO>(blog);
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string>() { ex.ToString() };
+            }
+            return _response;
+        }
+
 
         // Create a Blog [HttpPost]
         [HttpPost]
@@ -72,7 +107,8 @@ namespace BlogApi.Controllers
                 await _dbBlog.CreateAsync(blog);
                 _response.Result = _mapper.Map<BlogDTO>(blog);
                 _response.StatusCode = HttpStatusCode.Created;
-                return Ok();
+                
+                //return CreatedAtRoute("GetBlogs", new { id = blog.BlogId}, _response);
             }
             catch (Exception ex)
             {
@@ -85,7 +121,7 @@ namespace BlogApi.Controllers
 
 
         // Delete a Blog [HttpDelete] based on Id
-        [Authorize(Roles ="admin")]
+        //[Authorize(Roles ="admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

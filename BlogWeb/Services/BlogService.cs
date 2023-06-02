@@ -1,4 +1,4 @@
-﻿using BlogApplication.DataAccess.Models.DTO.Blog;
+﻿using DataAccess.Models.DTO.Blog;
 using BlogWeb.Models;
 using BlogWeb.Services.IServices;
 using DataAccess.Utilities;
@@ -23,7 +23,16 @@ namespace BlogWeb.Services
             {
                 ApiType = SD.ApiType.POST,
                 Data = dto,
-                Url = blogUrl + "/api/BlogController/"
+                Url = blogUrl + "/api/BlogController"
+            });
+        }
+
+        public Task<T> GetAsync<T>(int id)
+        {
+            return SendAsync<T>(new APIRequest()
+            {
+                ApiType = SD.ApiType.GET,
+                Url = blogUrl + "/api/BlogController/" + id
             });
         }
 

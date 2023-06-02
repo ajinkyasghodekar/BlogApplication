@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 
-namespace BlogApplication.DataAccess.Models
+namespace DataAccess.Models
 {
     public class Blog
     {
@@ -22,7 +23,7 @@ namespace BlogApplication.DataAccess.Models
         [DisplayName("Blog Category")]
         public string BlogCategory { get; set; }
 
-
+        [Required]
         [DisplayName("No of Subscriptions Allowed")]
         [Range(0, 100 ,ErrorMessage = "No Of Subscriptions must be between 1-100")]
         public int NoOfSubscriptions { get; set; }

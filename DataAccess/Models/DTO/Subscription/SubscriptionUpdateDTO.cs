@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BlogApplication.DataAccess.Models.DTO.Subscription
+namespace DataAccess.Models.DTO.Subscription
 {
     public class SubscriptionUpdateDTO
     {

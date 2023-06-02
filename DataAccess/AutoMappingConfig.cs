@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using BlogApplication.DataAccess.Models;
-using BlogApplication.DataAccess.Models.DTO.Blog;
-using BlogApplication.DataAccess.Models.DTO.Subscription;
-using BlogApplication.DataAccess.Models.DTO.User;
+using DataAccess.Models;
+using DataAccess.Models.DTO.Blog;
+using DataAccess.Models.DTO.Subscription;
+using DataAccess.Models.DTO.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;

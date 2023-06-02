@@ -1,6 +1,6 @@
 ﻿using BlogApi.Repository.IRepository;
-using BlogApplication.DataAccess.Models;
-using BlogApplication.DataAccess.Models.DTO.Security;
+using DataAccess.Models;
+using DataAccess.Models.DTO.Security;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
