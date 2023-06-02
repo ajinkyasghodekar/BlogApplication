@@ -1,14 +1,17 @@
 ﻿using DataAccess.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.Data
 {
-    public class MyAppDb : DbContext
+    public class MyAppDb : IdentityDbContext<IdentityUser>
     {
 
         public MyAppDb(DbContextOptions<MyAppDb> options) : base(options)
@@ -28,9 +31,13 @@ namespace DataAccess.Data
         // Table for Subscription
         public DbSet<Subscription> Subscriptions { get; set; }
 
+        // Table for Application User
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
         // Inserting sample data to Users table
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Blog>().HasData(
 
                 new Blog()
